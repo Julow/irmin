@@ -18,9 +18,18 @@ val config: unit -> Irmin.config
 
 
 module type IO = sig
-  val open_file: string -> Cstruct.t
+  type t
+  val open_file: string -> t
+  val blit: string -> srcoff:int -> t -> dstoff:int64 -> int -> unit
 end
 
 module Append_only (IO: IO): Irmin.APPEND_ONLY_STORE_MAKER
 module Make (IO: IO): Irmin.S_MAKER
 module KV (IO: IO): Irmin.KV_MAKER
+
+module type IO_Conf = sig
+  (** Allow to specify flags and file perms, O_RDWR must be set *)
+  val openfile : string -> Unix.file_descr
+end
+
+module IO_mapped_file_unix (Conf : IO_Conf): IO

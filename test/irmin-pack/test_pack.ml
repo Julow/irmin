@@ -16,10 +16,9 @@
 
 open Lwt.Infix
 
-module IO = struct
-
-  let open_file _file = failwith "TODO" (* Unix.map_file *)
-end
+module IO = Irmin_pack.IO_mapped_file_unix(struct
+  let openfile f = Unix.openfile f [ O_RDWR; O_CREAT ] 0o644
+end)
 
 let store =
   Irmin_test.store (module Irmin_pack.Make(IO)) (module Irmin.Metadata.None)
