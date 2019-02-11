@@ -16,11 +16,24 @@
 
 val config: unit -> Irmin.config
 
-
 module type IO = sig
-  type t
-  val open_file: string -> t
-  val blit: string -> srcoff:int -> t -> dstoff:int64 -> int -> unit
+
+  type fd
+
+  module Infinite_file : sig
+    type t
+
+    (** Map the given file in memory, RW
+        May raise [Unix.Unix_error] *)
+    val of_fd: fd -> t
+
+    val blit: string -> srcoff:int -> t -> dstoff:int64 -> int -> unit
+  end
+
+  val open_file: string -> fd
+
+  val get_buffer: fd -> ?pos:int64 -> int -> Cstruct.t
+
 end
 
 module Append_only (IO: IO): Irmin.APPEND_ONLY_STORE_MAKER
