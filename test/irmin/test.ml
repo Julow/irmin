@@ -163,6 +163,12 @@ let test_int () =
       size p (i + 2)
     ) ps
 
+let test_endian () =
+  Alcotest.(check (result int32 reject)) "eq"
+    (Ok 1633837924l) (T.decode_bin T.int32 "abcd");
+  Alcotest.(check string) "eq"
+    "abcd" (T.encode_bin T.int32 1633837924l)
+
 let suite = [
   "type", [
     "base"   , `Quick, test_base;
@@ -171,6 +177,7 @@ let suite = [
     "compare", `Quick, test_compare;
     "equal"  , `Quick, test_equal;
     "ints"   , `Quick, test_int;
+    "endian" , `Quick, test_endian;
   ]
 ]
 
